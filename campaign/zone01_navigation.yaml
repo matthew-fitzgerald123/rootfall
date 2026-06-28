@@ -1,0 +1,87 @@
+# Zone 1: Navigation.
+#
+# The first descent. The player learns to move through the tree and to read it.
+# Flags are runes slotted onto a base command. The Listing Warden teaches the ls
+# runes; the recall drills cover all five commands and their key flags; the boss
+# is a solve battle that forces a real find with -name against the fake world.
+#
+# All flag forms here are the GNU/Linux form, since solve battles assume GNU
+# coreutils behavior.
+
+id: zone01_navigation
+name: Navigation
+path: /
+theme: Reading and walking the tree. pwd, cd, ls, find, tree.
+commands:
+  - pwd
+  - cd
+  - ls
+  - find
+  - tree
+
+encounters:
+  - type: villager
+    name: The Listing Warden
+    lore: >-
+      A lantern-keeper at the City gate. "A bare ls shows you only the obvious,"
+      she says. "Slot a rune onto it and the tree gives up its secrets." She
+      hands you three runes for the base command ls.
+    teaches:
+      - command: "ls -l"
+        desc: "long listing: permissions, owner, size, time"
+      - command: "ls -a"
+        desc: "show hidden entries, the ones beginning with a dot"
+      - command: "ls -R"
+        desc: "recurse into every subdirectory"
+    quiz:
+      prompt: "Which ls rune reveals the hidden, dot-prefixed entries?"
+      answers:
+        - "ls -a"
+        - "-a"
+
+  - type: recall
+    prompt: "Print the current working directory. One word."
+    answers:
+      - "pwd"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Long listing of the current directory, permissions and all."
+    answers:
+      - "ls -l"
+    time_limit: 7
+
+  - type: recall
+    prompt: "List a directory and everything beneath it, recursively."
+    answers:
+      - "ls -R"
+      - "ls -r"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Find every file named config.yaml under the current tree."
+    answers:
+      - "find . -name config.yaml"
+      - "find -name config.yaml"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Find directories only under the current path, by type."
+    answers:
+      - "find . -type d"
+      - "find -type d"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Draw the directory layout as a tree."
+    answers:
+      - "tree"
+    time_limit: 6
+
+  - type: solve
+    name: The Gatekeeper
+    objective: >-
+      A file named gatekeeper.key is hidden somewhere under world/etc. Find it
+      with a single find using -name.
+    hint: "find world/etc -name gatekeeper.key"
+    key: "find -name"
