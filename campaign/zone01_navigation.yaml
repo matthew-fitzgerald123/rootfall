@@ -55,7 +55,6 @@ encounters:
     prompt: "List a directory and everything beneath it, recursively."
     answers:
       - "ls -R"
-      - "ls -r"
     time_limit: 7
 
   - type: recall

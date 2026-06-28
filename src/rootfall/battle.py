@@ -13,23 +13,53 @@ VILLAGER - teaching. An NPC delivers lore and the command or flag, then quiz
 Every battle feeds the spaced-repetition scheduler that lives in meta state.
 """
 
+import re
 import select
 import sys
 import time
 
 # Outcome dicts use these keys: "correct" (bool) and "damage" (int).
 
+# A bare bundle of short flags: a single dash followed only by ASCII letters,
+# such as -l, -tulpn, or -nn. Tokens with digits (-9, -15), long flags
+# (--recursive), flags carrying a value (-d:), or anything else are NOT bundles
+# and stay as ordinary tokens.
+_SHORT_FLAG = re.compile(r"-[A-Za-z]+")
 
-def _normalize(text):
-    """Lowercase and collapse whitespace so flag spacing does not matter."""
-    return " ".join(text.strip().lower().split())
+
+def _canonical(text):
+    """Reduce a command answer to a form that ignores only safe differences.
+
+    Ignored (safe): surrounding and repeated whitespace; the order of short
+    flags; and whether short flags are bundled (-tulpn) or separated (-t -u -l).
+
+    NOT ignored (would change meaning): the exact multiset of flag letters, so
+    -tulpn differs from -tuln; the case of flag letters, so ls -R differs from
+    ls -r; and every non-flag token, including -9 versus -15, long flags, -d:,
+    and filenames, so kill -9 differs from kill -15. Non-flag words are
+    lowercased for command-name forgiveness, matching the original behavior.
+    """
+    flags = []
+    words = []
+    for token in text.split():
+        if _SHORT_FLAG.fullmatch(token):
+            flags.extend(token[1:])  # the letters only, case preserved
+        else:
+            words.append(token.lower())
+    return tuple(words), tuple(sorted(flags))
 
 
 def matches(answer, accepted):
+    """True if answer is equivalent to any accepted option.
+
+    Equivalence is deliberately narrow: flag order, flag bundling, and
+    whitespace only. A missing flag, a wrong flag, a different flag case, or a
+    different argument all fail. See _canonical for the exact contract.
+    """
     if answer is None:
         return False
-    target = _normalize(answer)
-    return any(target == _normalize(option) for option in accepted)
+    target = _canonical(answer)
+    return any(target == _canonical(option) for option in accepted)
 
 
 def timed_input(prompt, time_limit):
