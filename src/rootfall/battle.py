@@ -25,23 +25,75 @@ import time
 # (--recursive), flags carrying a value (-d:), or anything else are NOT bundles
 # and stay as ordinary tokens.
 _SHORT_FLAG = re.compile(r"-[A-Za-z]+")
+_QUOTES = "\"'"
+
+
+def _tokenize(text):
+    """Split into shell-like tokens, keeping quoted spans whole.
+
+    Whitespace separates tokens, except whitespace inside a quoted span, which
+    stays part of that single token. This is what guarantees token boundaries:
+    a one-argument "foo bar" comes back as one token, never two. Quote
+    characters are kept on the token here; stripping happens in _strip_quotes.
+    An unterminated quote is treated literally, so the opening quote just rides
+    along on the token and nothing is merged or split unexpectedly.
+    """
+    tokens = []
+    current = []
+    quote = None
+    for ch in text:
+        if quote is None:
+            if ch.isspace():
+                if current:
+                    tokens.append("".join(current))
+                    current = []
+            else:
+                if ch in _QUOTES:
+                    quote = ch
+                current.append(ch)
+        else:
+            current.append(ch)
+            if ch == quote:
+                quote = None
+    if current:
+        tokens.append("".join(current))
+    return tokens
+
+
+def _strip_quotes(token):
+    """Strip one matched surrounding quote pair, but only when it is safe.
+
+    Stripped only when the same quote character wraps both ends and the inner
+    span has no whitespace, so "config.yaml" becomes config.yaml. A quoted span
+    that contains whitespace keeps its quotes, so "foo bar" stays a single
+    distinct token and never looks like the two tokens foo bar. Mismatched or
+    internal quotes are left untouched.
+    """
+    if len(token) >= 2 and token[0] in _QUOTES and token[-1] == token[0]:
+        inner = token[1:-1]
+        if token[0] not in inner and not any(ch.isspace() for ch in inner):
+            return inner
+    return token
 
 
 def _canonical(text):
     """Reduce a command answer to a form that ignores only safe differences.
 
     Ignored (safe): surrounding and repeated whitespace; the order of short
-    flags; and whether short flags are bundled (-tulpn) or separated (-t -u -l).
+    flags; whether short flags are bundled (-tulpn) or separated (-t -u -l); and
+    surrounding matched quotes around a whitespace-free argument.
 
     NOT ignored (would change meaning): the exact multiset of flag letters, so
     -tulpn differs from -tuln; the case of flag letters, so ls -R differs from
-    ls -r; and every non-flag token, including -9 versus -15, long flags, -d:,
-    and filenames, so kill -9 differs from kill -15. Non-flag words are
-    lowercased for command-name forgiveness, matching the original behavior.
+    ls -r; token boundaries, so a quoted "foo bar" never equals two arguments;
+    and every non-flag token, including -9 versus -15, long flags, -d:, and
+    filenames, so kill -9 differs from kill -15. Non-flag words are lowercased
+    for command-name forgiveness, matching the original behavior.
     """
     flags = []
     words = []
-    for token in text.split():
+    for raw in _tokenize(text):
+        token = _strip_quotes(raw)
         if _SHORT_FLAG.fullmatch(token):
             flags.extend(token[1:])  # the letters only, case preserved
         else:

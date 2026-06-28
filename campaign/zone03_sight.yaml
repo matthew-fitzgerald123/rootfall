@@ -93,6 +93,8 @@ encounters:
     answers:
       - "grep -r warden ."
       - "grep -r warden"
+      - "grep -R warden ."
+      - "grep -R warden"
     time_limit: 8
 
   - type: recall

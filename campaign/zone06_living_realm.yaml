@@ -26,7 +26,9 @@ encounters:
       leave," it says. "kill -15 is SIGTERM, a polite request a process can clean
       up after. kill -9 is SIGKILL, which cannot be caught or ignored." It also
       shows you the two process listings, ps aux and ps -ef, and how to read a
-      soul's record at /proc/<pid>/status.
+      soul's record at /proc/<pid>/status. It weighs souls too: nice -n 10
+      <command> launches a new process with a gentler priority, while
+      renice 10 <pid> reweights one that is already running by its PID.
     teaches:
       - command: "ps aux"
         desc: "BSD-style listing of every process with CPU and memory"
@@ -41,7 +43,7 @@ encounters:
       - command: "jobs"
         desc: "list the shell's background jobs"
       - command: "nice"
-        desc: "start a process with an adjusted scheduling priority (renice changes a running one)"
+        desc: "set scheduling priority at launch, e.g. nice -n 10 <command> (renice changes a running process by PID)"
     quiz:
       prompt: "Which signal does kill -9 send, the one that cannot be caught or ignored?"
       answers:
@@ -79,6 +81,12 @@ encounters:
     answers:
       - "jobs"
     time_limit: 5
+
+  - type: recall
+    prompt: "Launch the program backup at a lower priority, niceness 10."
+    answers:
+      - "nice -n 10 backup"
+    time_limit: 8
 
   - type: recall
     prompt: "Lower the priority of running process 4242 to nice value 10."
