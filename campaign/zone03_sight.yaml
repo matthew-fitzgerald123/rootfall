@@ -44,11 +44,41 @@ encounters:
         desc: "show the first N lines"
       - command: "wc -l"
         desc: "count lines"
-    quiz:
-      prompt: "Which grep flag inverts the match, printing only lines that do NOT match?"
-      answers:
-        - "grep -v"
-        - "-v"
+    quizzes:
+      - prompt: "Which grep flag searches recursively through every file in a directory tree?"
+        answers:
+          - "grep -r"
+          - "grep -R"
+          - "-r"
+          - "-R"
+      - prompt: "Which grep flag inverts the match, printing lines that do NOT contain the pattern?"
+        answers:
+          - "grep -v"
+          - "-v"
+      - prompt: "Which grep flag makes the search case-insensitive?"
+        answers:
+          - "grep -i"
+          - "-i"
+      - prompt: "Which grep flag prefixes each matching line with its line number?"
+        answers:
+          - "grep -n"
+          - "-n"
+      - prompt: "Which tail flag follows a file live, printing new lines as they are written?"
+        answers:
+          - "tail -f"
+          - "-f"
+      - prompt: "Which tail flag limits output to the last N lines?"
+        answers:
+          - "tail -n"
+          - "-n"
+      - prompt: "Which head flag limits output to the first N lines?"
+        answers:
+          - "head -n"
+          - "-n"
+      - prompt: "Which wc flag counts lines rather than words or bytes?"
+        answers:
+          - "wc -l"
+          - "-l"
 
   - type: recall
     prompt: "Print the whole file realm.log to the screen."
@@ -120,5 +150,5 @@ encounters:
     objective: >-
       world/var/log/realm.log is a tangle of INFO, WARN, and ERROR records. Pull
       out only the ERROR lines and count them with wc -l.
-    hint: "grep ERROR world/var/log/realm.log | wc -l"
+    hint: "grep <PATTERN> <file> | wc -l"
     key: "grep wc -l"

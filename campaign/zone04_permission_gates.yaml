@@ -39,11 +39,34 @@ encounters:
         desc: "set both owner and group at once"
       - command: "umask"
         desc: "the mask that decides default permissions on new files"
-    quiz:
-      prompt: "Which numeric mode gives the owner read, write, and execute, and everyone else read and execute?"
-      answers:
-        - "chmod 755"
-        - "755"
+    quizzes:
+      - prompt: "Which numeric mode gives rwx to the owner and r-x to group and others?"
+        answers:
+          - "chmod 755"
+          - "755"
+      - prompt: "Which numeric mode gives rw- to the owner and r-- to group and others?"
+        answers:
+          - "chmod 644"
+          - "644"
+      - prompt: "Which numeric mode gives rw- to the owner only, locking everyone else out?"
+        answers:
+          - "chmod 600"
+          - "600"
+      - prompt: "Which symbolic chmod expression adds the execute bit to a file?"
+        answers:
+          - "chmod +x"
+          - "+x"
+      - prompt: "Which chmod flag applies a permission change recursively through a directory tree?"
+        answers:
+          - "chmod -R"
+          - "-R"
+      - prompt: "Type the chown syntax that sets both owner and group in one command (e.g. deploy:staff)."
+        answers:
+          - "chown user:group"
+          - "chown deploy:staff"
+      - prompt: "Which command shows or sets the default permission mask applied to new files?"
+        answers:
+          - "umask"
 
   - type: recall
     prompt: "Set notes.txt to mode 644 numerically."
@@ -86,5 +109,5 @@ encounters:
     objective: >-
       world/etc/gate.lock is sealed at mode 600, readable only by its owner. Open
       it to mode 644 with a single numeric chmod so the realm can read it.
-    hint: "chmod 644 world/etc/gate.lock"
+    hint: "chmod <mode> <file>"
     key: "chmod numeric"

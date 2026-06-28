@@ -44,12 +44,34 @@ encounters:
         desc: "list the shell's background jobs"
       - command: "nice"
         desc: "set scheduling priority at launch, e.g. nice -n 10 <command> (renice changes a running process by PID)"
-    quiz:
-      prompt: "Which signal does kill -9 send, the one that cannot be caught or ignored?"
-      answers:
-        - "SIGKILL"
-        - "kill -9"
-        - "9"
+    quizzes:
+      - prompt: "Which ps flags give a BSD-style listing of every process with CPU and memory?"
+        answers:
+          - "ps aux"
+      - prompt: "Which ps flags give a full standard listing with parent PIDs?"
+        answers:
+          - "ps -ef"
+      - prompt: "Which kill signal number sends SIGTERM, the polite catchable stop?"
+        answers:
+          - "kill -15"
+          - "15"
+          - "-15"
+          - "SIGTERM"
+      - prompt: "Which kill signal number sends SIGKILL, the uncatchable force-kill?"
+        answers:
+          - "kill -9"
+          - "9"
+          - "-9"
+          - "SIGKILL"
+      - prompt: "Which single command opens a live, sorted view of running processes?"
+        answers:
+          - "top"
+      - prompt: "Which command lists the current shell's background jobs?"
+        answers:
+          - "jobs"
+      - prompt: "Which command launches a new process at a lower scheduling priority?"
+        answers:
+          - "nice"
 
   - type: recall
     prompt: "List every process, BSD style, with CPU and memory."
@@ -106,5 +128,5 @@ encounters:
     objective: >-
       A rogue process haunts the realm. Read world/proc/6606/status to confirm it
       is wraithd and still running, then end it for good with a force-kill by PID.
-    hint: "cat world/proc/6606/status ; kill -9 6606"
+    hint: "cat <proc/pid/status> ; kill -9 <pid>"
     key: "kill -9"

@@ -54,12 +54,52 @@ encounters:
         desc: "sync trees, archive mode, verbose"
       - command: "rsync -avz"
         desc: "sync trees, archive mode, verbose, compressed in transit"
-    quiz:
-      prompt: "Which tar flags create a gzip-compressed archive file (create, gzip, file)?"
-      answers:
-        - "tar -czf"
-        - "czf"
-        - "-czf"
+    quizzes:
+      - prompt: "Which df flag shows disk usage in human-readable units (GB, MB)?"
+        answers:
+          - "df -h"
+          - "-h"
+      - prompt: "What du flags show the total size of a directory in human-readable form?"
+        answers:
+          - "du -sh"
+          - "-sh"
+      - prompt: "What du flag shows the size of each item in human-readable units?"
+        answers:
+          - "du -h"
+          - "-h"
+      - prompt: "Which free flag shows memory usage in human-readable units?"
+        answers:
+          - "free -h"
+          - "-h"
+      - prompt: "Which command lists block devices as a tree (no flags needed)?"
+        answers:
+          - "lsblk"
+      - prompt: "Which command shows currently mounted filesystems when run with no arguments?"
+        answers:
+          - "mount"
+      - prompt: "Which tar flags create a gzip-compressed archive? (create, gzip, file)"
+        answers:
+          - "tar -czf"
+          - "czf"
+          - "-czf"
+      - prompt: "Which tar flags extract a gzip-compressed archive?"
+        answers:
+          - "tar -xzf"
+          - "xzf"
+          - "-xzf"
+      - prompt: "Which tar flags list the contents of a gzip archive without extracting it?"
+        answers:
+          - "tar -tzf"
+          - "tzf"
+          - "-tzf"
+      - prompt: "What rsync flags sync directories in archive mode with verbose output?"
+        answers:
+          - "rsync -av"
+          - "-av"
+      - prompt: "What rsync flags sync directories in archive mode, verbose, compressed in transit?"
+        answers:
+          - "rsync -avz"
+          - "-avz"
 
   - type: recall
     prompt: "Show free space on all mounted filesystems, human-readable."
@@ -128,5 +168,5 @@ encounters:
       verify its contents with tar -tzf. As an alternative read, weigh each
       subdirectory with du -sh world/srv/realm/* piped into sort -h to find the
       largest.
-    hint: "tar -czf realm.tar.gz world/srv/realm ; tar -tzf realm.tar.gz   (or: du -sh world/srv/realm/* | sort -h)"
+    hint: "tar -czf <archive.tar.gz> <path> ; tar -tzf <archive.tar.gz>"
     key: "tar czf tzf"

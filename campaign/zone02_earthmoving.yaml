@@ -39,11 +39,31 @@ encounters:
         desc: "make a symbolic link, a signpost to another path"
       - command: "touch"
         desc: "create an empty file or update its timestamp"
-    quiz:
-      prompt: "Which flag makes mkdir build missing parent directories as needed?"
-      answers:
-        - "mkdir -p"
-        - "-p"
+    quizzes:
+      - prompt: "Which flag tells mkdir to build all missing parent directories at once?"
+        answers:
+          - "mkdir -p"
+          - "-p"
+      - prompt: "Which cp flag copies a directory tree recursively?"
+        answers:
+          - "cp -r"
+          - "cp -R"
+          - "-r"
+          - "-R"
+      - prompt: "Which rm flags forcibly remove a directory tree with no prompts?"
+        answers:
+          - "rm -rf"
+          - "-rf"
+      - prompt: "Which command moves or renames a file or directory in a single step?"
+        answers:
+          - "mv"
+      - prompt: "Which ln flag creates a symbolic link rather than a hard link?"
+        answers:
+          - "ln -s"
+          - "-s"
+      - prompt: "Which command creates an empty file or updates an existing file's timestamp?"
+        answers:
+          - "touch"
 
   - type: recall
     prompt: "Create the nested path a/b/c in a single command."
@@ -89,5 +109,5 @@ encounters:
       world/var/cells/block-a/cell-3, place an empty prisoner.txt inside it with
       touch, then bind it to the surface with a symbolic link at
       world/var/escape.txt using ln -s.
-    hint: "mkdir -p world/var/cells/block-a/cell-3 ; touch world/var/cells/block-a/cell-3/prisoner.txt ; ln -s cells/block-a/cell-3/prisoner.txt world/var/escape.txt"
+    hint: "mkdir -p <path> ; touch <path>/<file> ; ln -s <target> <linkname>"
     key: "mkdir -p"

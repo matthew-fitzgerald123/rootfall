@@ -56,10 +56,50 @@ encounters:
         desc: "list open network files (sockets)"
       - command: "lsof -i :PORT"
         desc: "show what process holds a specific port"
-    quiz:
-      prompt: "ss is the modern replacement for which deprecated tool, where both list listening sockets with -tulpn?"
-      answers:
-        - "netstat"
+    quizzes:
+      - prompt: "Type the ss flags for all tcp/udp listening sockets, numeric, with process."
+        answers:
+          - "ss -tulpn"
+      - prompt: "Type the ss flags for tcp listening sockets only, numeric, with process."
+        answers:
+          - "ss -tlnp"
+      - prompt: "ss is the modern replacement for which deprecated networking tool?"
+        answers:
+          - "netstat"
+      - prompt: "Type the deprecated tool's equivalent of ss -tulpn."
+        answers:
+          - "netstat -tulpn"
+      - prompt: "Which tcpdump flag specifies the network interface to capture on?"
+        answers:
+          - "tcpdump -i"
+          - "-i"
+      - prompt: "Which tcpdump flag disables host and port name resolution?"
+        answers:
+          - "tcpdump -nn"
+          - "-nn"
+      - prompt: "Which curl flag fetches only the response headers, not the body?"
+        answers:
+          - "curl -I"
+          - "-I"
+      - prompt: "Which curl flag suppresses progress output and error messages?"
+        answers:
+          - "curl -s"
+          - "-s"
+      - prompt: "Which dig option gives a terse answer with just the DNS records?"
+        answers:
+          - "dig +short"
+          - "+short"
+      - prompt: "Which dig query type requests the IPv4 address record for a domain?"
+        answers:
+          - "dig A"
+          - "A"
+      - prompt: "Which lsof flag lists all open network files and sockets?"
+        answers:
+          - "lsof -i"
+          - "-i"
+      - prompt: "Type the lsof command to show which process holds port 8080."
+        answers:
+          - "lsof -i :8080"
 
   - type: recall
     prompt: "List all tcp and udp listening sockets, numeric, with process (modern tool)."
@@ -147,5 +187,5 @@ encounters:
       Something is LISTENING on port 8080. The captured socket table is at
       world/var/net/ss.txt. Identify the process holding 8080 by filtering the
       listening sockets for that port.
-    hint: "ss -tulpn | grep 8080   (live: lsof -i :8080)"
+    hint: "grep <port> <file>   OR   lsof -i :<port>"
     key: "ss grep port"

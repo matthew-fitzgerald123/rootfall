@@ -33,11 +33,19 @@ encounters:
         desc: "show hidden entries, the ones beginning with a dot"
       - command: "ls -R"
         desc: "recurse into every subdirectory"
-    quiz:
-      prompt: "Which ls rune reveals the hidden, dot-prefixed entries?"
-      answers:
-        - "ls -a"
-        - "-a"
+    quizzes:
+      - prompt: "Type the ls rune that shows a long listing with permissions, owner, and size."
+        answers:
+          - "ls -l"
+          - "-l"
+      - prompt: "Which ls rune reveals hidden, dot-prefixed entries?"
+        answers:
+          - "ls -a"
+          - "-a"
+      - prompt: "Which ls rune lists a directory and all its contents recursively?"
+        answers:
+          - "ls -R"
+          - "-R"
 
   - type: recall
     prompt: "Print the current working directory. One word."
@@ -82,5 +90,5 @@ encounters:
     objective: >-
       A file named gatekeeper.key is hidden somewhere under world/etc. Find it
       with a single find using -name.
-    hint: "find world/etc -name gatekeeper.key"
+    hint: "find <path> -name <filename>"
     key: "find -name"

@@ -45,11 +45,32 @@ encounters:
         desc: "collapse adjacent duplicates and prefix each with its count"
       - command: "tr a-z A-Z"
         desc: "translate one character set to another, here lower to upper"
-    quiz:
-      prompt: "After sorting lines, which command with which flag tallies how many times each one appears?"
-      answers:
-        - "uniq -c"
-        - "sort | uniq -c"
+    quizzes:
+      - prompt: "What sed expression substitutes the first occurrence of 'old' with 'new' on each line?"
+        answers:
+          - "sed 's/old/new/'"
+      - prompt: "What awk expression prints the second whitespace-separated field of each line?"
+        answers:
+          - "awk '{print $2}'"
+      - prompt: "What cut expression extracts the first field from colon-delimited input?"
+        answers:
+          - "cut -d: -f1"
+          - "cut -d ':' -f1"
+      - prompt: "Which command sorts lines in plain lexicographic order?"
+        answers:
+          - "sort"
+      - prompt: "Which sort flag sorts lines numerically rather than lexically?"
+        answers:
+          - "sort -n"
+          - "-n"
+      - prompt: "After sorting, which command collapses duplicate lines and prefixes each with its count?"
+        answers:
+          - "uniq -c"
+          - "sort | uniq -c"
+      - prompt: "What tr expression translates all lowercase letters to uppercase?"
+        answers:
+          - "tr a-z A-Z"
+          - "tr '[:lower:]' '[:upper:]'"
 
   - type: recall
     prompt: "Substitute the first occurrence of old with new on each line using sed."
@@ -106,5 +127,5 @@ encounters:
     objective: >-
       world/etc/roster.db is colon-delimited as name:role:zone. In a single pipe,
       cut out the role field, sort it, and count how many of each role there are.
-    hint: "cut -d: -f2 world/etc/roster.db | sort | uniq -c"
+    hint: "cut -d<delim> -f<n> <file> | sort | uniq -c"
     key: "cut sort uniq"
