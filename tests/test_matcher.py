@@ -110,6 +110,15 @@ class CampaignAnswerMatching(unittest.TestCase):
         self.assertTrue(battle.matches("grep -r warden .", answers))
         self.assertFalse(battle.matches("grep -x warden .", answers))
 
+    def test_ls_R_accepted_for_recursive_listing(self):
+        answers = _recall_starting(_zone("zone01_navigation"), "ls -R")
+        self.assertTrue(battle.matches("ls -R", answers))
+
+    def test_ls_r_lowercase_rejected_for_recursive_listing(self):
+        # -r is reverse-sort; it must not pass for the recursive-listing recall.
+        answers = _recall_starting(_zone("zone01_navigation"), "ls -R")
+        self.assertFalse(battle.matches("ls -r", answers))
+
     def test_nice_and_renice_recalls_do_not_collapse(self):
         zone = _zone("zone06_living_realm")
         nice = _recall_starting(zone, "nice ")

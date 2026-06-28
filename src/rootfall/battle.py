@@ -114,6 +114,30 @@ def matches(answer, accepted):
     return any(target == _canonical(option) for option in accepted)
 
 
+# Set to True when timed_input times out so the next call drains any
+# buffered keystrokes the player typed after the timeout fired.
+_pending_drain = False
+
+
+def _drain_stdin(timeout=0.0):
+    """Discard any data waiting in stdin.
+
+    After a timeout the player may still press Enter, buffering a line that
+    the next prompt would otherwise consume as its own answer. timeout gives a
+    brief window to catch input that arrives just after this call starts.
+    """
+    try:
+        while True:
+            ready, _, _ = select.select([sys.stdin], [], [], timeout)
+            if not ready:
+                break
+            line = sys.stdin.readline()
+            if not line:  # EOF on the read end
+                break
+    except (OSError, ValueError):
+        pass
+
+
 def timed_input(prompt, time_limit):
     """Read a line, but give up after time_limit seconds.
 
@@ -121,6 +145,14 @@ def timed_input(prompt, time_limit):
     is None. Uses select so a real terminal gets a hard cutoff; if select is not
     available (an unusual stdin) it falls back to an untimed read.
     """
+    global _pending_drain
+    if _pending_drain:
+        # Drain with a short window so keystrokes typed after the previous
+        # timeout (but before this prompt started) are discarded rather than
+        # read as an answer to this question.
+        _drain_stdin(timeout=0.2)
+        _pending_drain = False
+
     sys.stdout.write(prompt + "\n> ")
     sys.stdout.flush()
     start = time.time()
@@ -139,6 +171,7 @@ def timed_input(prompt, time_limit):
         return line.strip(), elapsed, False
 
     sys.stdout.write("\n... time!\n")
+    _pending_drain = True
     return None, time.time() - start, True
 
 
