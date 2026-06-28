@@ -61,20 +61,22 @@ Filesystem Hierarchy Standard, and it never touches your real root. That keeps
 your system safe and lets `/proc` exist on macOS, where the process files are
 fabricated. Both `world/` and your `saves/` are gitignored.
 
-Zones, in descent order:
+Zones, in descent order, by what each one drills:
 
-1. Navigation
-2. The City of Configs
-3. The Hall of Records
-4. The Living Realm
-5. The Forge
-6. The Armory
-7. The Frontier
-8. Deep System
+1. Navigation: `pwd`, `cd`, `ls`, `find`, `tree`
+2. Earthmoving: `mkdir`, `touch`, `cp`, `mv`, `rm`, `ln`
+3. Sight: `cat`, `less`, `head`, `tail`, `grep`, `wc` (set in the Hall of Records, `/var/log`)
+4. The Permission Gates: `chmod`, `chown`, `sudo`, `umask`
+5. The Stream Weavers: `sed`, `awk`, `cut`, `sort`, `uniq`, `tr` (pipes unlock here as combo chains)
+6. The Living Realm: `ps`, `top`, `kill`, `jobs`, `nice` (set in `/proc`)
+7. The Frontier: `ss`, `netstat`, `tcpdump`, `curl`, `dig`, `lsof`
+8. Deep System: `df`, `du`, `free`, `lsblk`, `mount`, `tar`, `rsync`
 
-Only Zone 1, Navigation, is implemented so far. It teaches `pwd`, `cd`, `ls`,
-`find`, and `tree`, along with the `ls` and `find` flag runes, and ends with a
-solve-battle boss that forces a real `find -name`.
+All eight zones are implemented and playable. Each one has a teaching villager
+that quiz-gates before letting you pass, timed recall battles drawn from the SM-2
+queue, and an honor-system solve boss. Pipes unlock at Zone 5, and the bosses in
+zones 5 through 8 require pipe chains. The Frontier, Zone 7, is the boss zone,
+built around networking triage.
 
 ## Architecture
 
@@ -99,10 +101,21 @@ is skipped outright, it is only compressed.
 
 ## Roadmap
 
+Done:
+
 - Foundation: repo, two-layer save model, fake FHS world, campaign loader.
 - Zone 1 vertical slice: Navigation playable end to end with all three battle
   types and a solve-battle boss.
 - SRS core: SM-2 scheduler with timer-as-grader and unit tests.
-- Content expansion: author zones 2 through The Frontier as pure YAML, including
-  pipes as combo chains.
-- Hardening: richer grading, deeper world detail, and Deep System as the finale.
+- Content expansion: all eight zones authored as pure YAML, with pipes as combo
+  chains in zones 5 through 8.
+- Hardening: an answer-key audit, and a recall matcher that accepts
+  equivalent-correct answers (flag-order independence, bundled versus separated
+  short flags, quote tolerance) while keeping semantically different commands
+  distinct.
+
+Still ahead:
+
+- Timer calibration against real play sessions.
+- Output-reading and diagnostic-chain drills.
+- A possible RHEL-specific zone (systemd, SELinux, dnf, firewalld).
