@@ -23,12 +23,6 @@ and never on the real filesystem:
   Zone 6  fake proc/<pid>/status files including the rogue wraithd
   Zone 7  var/net/ss.txt, a captured socket table to grep for port 8080
   Zone 8  srv/realm, a small tree to archive with tar and weigh with du
-  Zone 9  var/log text captures only: a systemctl status block and an AVC denial
-
-Zone 9 is deliberately text-only. systemd and SELinux state cannot be safely or
-realistically reproduced under world/ on macOS (no systemd, no real SELinux), so
-the zone references captured output files in the same spirit as zone 7's ss.txt
-rather than pretending to simulate the real subsystems.
 """
 
 import os
@@ -115,25 +109,6 @@ _SS_OUTPUT = (
     "udp   UNCONN 0      0      0.0.0.0:68         0.0.0.0:*         users:((\"dhclient\",pid=455,fd=6))\n"
 )
 
-# Text-only captures for Zone 9 (Red Hat). These are reference fixtures the
-# villager and boss point at, NOT a simulation of systemd or SELinux. The AVC
-# line and the status block are realistic in shape; their exact field formatting
-# is in the project's VERIFY-ON-A-REAL-RHEL-BOX notes.
-_SYSTEMCTL_STATUS = (
-    "realmd.service - Realm Citadel Daemon\n"
-    "   Loaded: loaded (/usr/lib/systemd/system/realmd.service; enabled; vendor preset: disabled)\n"
-    "   Active: failed (Result: exit-code) since Mon 2024-06-10 14:22:01 UTC; 3s ago\n"
-    "  Process: 2317 ExecStart=/usr/sbin/realmd (code=exited, status=1/FAILURE)\n"
-    " Main PID: 2317 (code=exited, status=1/FAILURE)\n"
-)
-
-_AVC_DENIAL = (
-    "type=AVC msg=audit(1718029321.123:456): avc:  denied  { name_connect } "
-    "for  pid=2317 comm=\"realmd\" dest=8080 "
-    "scontext=system_u:system_r:realmd_t:s0 "
-    "tcontext=system_u:object_r:http_port_t:s0 tclass=tcp_socket permissive=0\n"
-)
-
 _FILES = {
     "etc/hostname": "rootfall\n",
     "etc/motd": "Welcome to the City of Configs.\n",
@@ -143,8 +118,6 @@ _FILES = {
     "var/log/messages": "boot: descent initialized\nwarden: gate sealed\n",
     "var/log/old/messages.1": "archived records of older runs\n",
     "var/log/realm.log": _REALM_LOG,
-    "var/log/systemctl_status.txt": _SYSTEMCTL_STATUS,
-    "var/log/avc_denial.txt": _AVC_DENIAL,
     "var/net/ss.txt": _SS_OUTPUT,
     "bin/ls": "(armory) base command: ls\n",
     "bin/find": "(armory) base command: find\n",
@@ -224,9 +197,5 @@ def expected_fixtures(root="world"):
         "zone08_deep_system": [
             os.path.join(root, "srv/realm/data/records.db"),
             os.path.join(root, "srv/realm/logs/old.log"),
-        ],
-        "zone09_redhat_realm": [
-            os.path.join(root, "var/log/systemctl_status.txt"),
-            os.path.join(root, "var/log/avc_denial.txt"),
         ],
     }

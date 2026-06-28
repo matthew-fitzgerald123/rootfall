@@ -24,7 +24,7 @@ CAMPAIGN_DIR = os.path.join(ROOT, "campaign")
 class CampaignLoadTests(unittest.TestCase):
     def test_all_zone_files_load_and_validate(self):
         files = sorted(glob.glob(os.path.join(CAMPAIGN_DIR, "zone*.yaml")))
-        self.assertEqual(len(files), 9, "expected zones 1 through 9")
+        self.assertEqual(len(files), 8, "expected zones 1 through 8")
         for path in files:
             zone = campaign.load_zone_file(path)  # raises CampaignError if bad
             self.assertTrue(zone.id)
@@ -36,7 +36,7 @@ class CampaignLoadTests(unittest.TestCase):
         ids = [z.id for z in zones]
         self.assertEqual(ids, sorted(ids))
         self.assertEqual(ids[0], "zone01_navigation")
-        self.assertEqual(ids[-1], "zone09_redhat_realm")
+        self.assertEqual(ids[-1], "zone08_deep_system")
 
     def test_every_zone_has_villager_recall_and_solve(self):
         for zone in campaign.load_campaign(CAMPAIGN_DIR):
@@ -83,13 +83,6 @@ class WorldFixtureTests(unittest.TestCase):
             status = handle.read()
         self.assertIn("wraithd", status)
         self.assertIn("6606", status)
-
-    def test_redhat_text_fixtures_present(self):
-        world.build_world(self.root)
-        with open(os.path.join(self.root, "var/log/systemctl_status.txt")) as handle:
-            self.assertIn("Active: failed", handle.read())
-        with open(os.path.join(self.root, "var/log/avc_denial.txt")) as handle:
-            self.assertIn("avc:", handle.read())
 
 
 if __name__ == "__main__":
