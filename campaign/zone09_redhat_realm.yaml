@@ -1,0 +1,333 @@
+# Zone 9: The Red Hat Realm.
+#
+# The enforcing citadel. Zones 1-8 cover generic Linux; this zone drills the
+# Red Hat Enterprise Linux layer an interviewer uses to tell a Red Hat veteran
+# from someone who has only run adjacent Linux: systemd and journald, SELinux,
+# dnf, and firewalld. Source of truth is RHEL 8/9 behavior.
+#
+# Accuracy matters most here. A confidently-wrong SELinux or systemd answer is
+# worse than no answer, so any item that was less than certain at authoring time
+# is listed in the project's VERIFY-ON-A-REAL-RHEL-BOX notes rather than treated
+# as settled fact.
+#
+# Some recalls present a block of realistic command OUTPUT and ask what it means
+# or what to do next. These use the ordinary recall schema (a prompt string plus
+# accepted answers); the prompt is just a multi-line literal block.
+
+id: zone09_redhat_realm
+name: The Red Hat Realm
+path: /etc/sysconfig
+theme: The RHEL layer. systemd, journald, SELinux, dnf, firewalld.
+commands:
+  - systemctl
+  - journalctl
+  - getenforce
+  - setenforce
+  - restorecon
+  - ausearch
+  - dnf
+  - firewall-cmd
+
+encounters:
+  - type: villager
+    name: The Citadel Steward
+    lore: >-
+      The citadel runs on systemd, dnf, firewalld, and SELinux, the last of which
+      tells a Red Hat veteran from a tourist. systemd first: "start" runs a unit
+      now, "enable" makes it persist across reboots, and the two are independent,
+      so "enable --now" does both. A unit is active, inactive, or failed, and
+      systemctl status with journalctl -u reads its story. SELinux is the hard
+      part. It is mandatory access control sitting ON TOP of normal user and
+      group permissions, so a denial can stop a service even when chmod and chown
+      look perfect. When something refuses to run and the permissions check out,
+      look for an AVC denial in the audit log before you blame the service. dnf
+      is the package manager, and yum is the old alias that now points at it.
+      firewalld is the native firewall, grouping rules into zones; other distros
+      may drive raw iptables or nftables, but on Red Hat you speak to firewalld,
+      and a rule is runtime-only until you add --permanent and then --reload.
+    teaches:
+      - command: "systemctl enable --now"
+        desc: "enable at boot AND start now (enable persists, start is now-only)"
+      - command: "systemctl daemon-reload"
+        desc: "reload unit files after editing them on disk"
+      - command: "systemctl list-units --failed"
+        desc: "show the units in the failed state"
+      - command: "journalctl -u"
+        desc: "logs for one unit, e.g. journalctl -u sshd"
+      - command: "journalctl -p err"
+        desc: "filter the journal by priority (err = level 3)"
+      - command: "getenforce"
+        desc: "print the current SELinux mode"
+      - command: "setenforce 0"
+        desc: "switch to permissive at runtime (1 switches back to enforcing)"
+      - command: "ls -Z"
+        desc: "view the SELinux context on files"
+      - command: "restorecon"
+        desc: "reset a file to the context its policy says it should have"
+      - command: "setsebool -P"
+        desc: "set an SELinux boolean and persist it across reboots"
+      - command: "ausearch -m avc"
+        desc: "search the audit log for SELinux AVC denials"
+      - command: "semanage fcontext"
+        desc: "manage persistent file-context rules (then restorecon to apply)"
+      - command: "dnf provides"
+        desc: "find which package owns a given file or path"
+      - command: "dnf history"
+        desc: "review past package transactions"
+      - command: "firewall-cmd --permanent"
+        desc: "make a firewall rule survive reload and reboot (pair with --reload)"
+      - command: "firewall-cmd --reload"
+        desc: "apply permanent firewall rules to the running firewall"
+    quiz:
+      prompt: "A service will not start, but its file permissions and ownership are correct. What should you check before deciding the service itself is broken?"
+      answers:
+        - "selinux"
+        - "avc"
+        - "avc denial"
+        - "an avc denial"
+
+  # --- systemd ---
+
+  - type: recall
+    prompt: "Show the status of the service sshd."
+    answers:
+      - "systemctl status sshd"
+      - "systemctl status sshd.service"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Restart the service nginx."
+    answers:
+      - "systemctl restart nginx"
+      - "systemctl restart nginx.service"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Enable httpd to start at boot, without starting it right now."
+    answers:
+      - "systemctl enable httpd"
+      - "systemctl enable httpd.service"
+    time_limit: 10
+
+  - type: recall
+    prompt: "Enable chronyd to start at boot and start it immediately, in one command."
+    answers:
+      - "systemctl enable --now chronyd"
+      - "systemctl enable --now chronyd.service"
+    time_limit: 11
+
+  - type: recall
+    prompt: "Disable httpd from starting at boot."
+    answers:
+      - "systemctl disable httpd"
+      - "systemctl disable httpd.service"
+    time_limit: 10
+
+  - type: recall
+    prompt: "Reload systemd's manager configuration after editing a unit file."
+    answers:
+      - "systemctl daemon-reload"
+    time_limit: 10
+
+  - type: recall
+    prompt: "List only the systemd units that are in a failed state."
+    answers:
+      - "systemctl list-units --failed"
+      - "systemctl --failed"
+    time_limit: 11
+
+  # --- journald ---
+
+  - type: recall
+    prompt: "Show the journal for the unit sshd."
+    answers:
+      - "journalctl -u sshd"
+      - "journalctl -u sshd.service"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Follow the journal live as new entries arrive."
+    answers:
+      - "journalctl -f"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Show only journal entries at error priority."
+    answers:
+      - "journalctl -p err"
+      - "journalctl -p 3"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Show journal entries from the current boot only."
+    answers:
+      - "journalctl -b"
+    time_limit: 8
+
+  # --- SELinux ---
+
+  - type: recall
+    prompt: "Print the current SELinux mode."
+    answers:
+      - "getenforce"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Switch SELinux to enforcing at runtime."
+    answers:
+      - "setenforce 1"
+      - "setenforce enforcing"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Show the SELinux contexts on the files in the current directory."
+    answers:
+      - "ls -Z"
+      - "ls -lZ"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Show the SELinux context column on running processes."
+    answers:
+      - "ps -eZ"
+      - "ps axZ"
+      - "ps -Z"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Reset /var/www/html to its policy-default SELinux context, recursively."
+    answers:
+      - "restorecon -Rv /var/www/html"
+      - "restorecon -R /var/www/html"
+    time_limit: 11
+
+  - type: recall
+    prompt: "Search the audit log for SELinux AVC denials."
+    answers:
+      - "ausearch -m avc"
+    time_limit: 10
+
+  - type: recall
+    prompt: "Persistently turn on the SELinux boolean that lets httpd make network connections."
+    answers:
+      - "setsebool -P httpd_can_network_connect on"
+    time_limit: 13
+
+  # --- dnf ---
+
+  - type: recall
+    prompt: "Install the package httpd."
+    answers:
+      - "dnf install httpd"
+      - "yum install httpd"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Remove the package httpd."
+    answers:
+      - "dnf remove httpd"
+      - "yum remove httpd"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Update all installed packages."
+    answers:
+      - "dnf update"
+      - "dnf upgrade"
+      - "yum update"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Find which package provides the file /usr/sbin/sshd."
+    answers:
+      - "dnf provides /usr/sbin/sshd"
+    time_limit: 11
+
+  - type: recall
+    prompt: "Show the dnf transaction history."
+    answers:
+      - "dnf history"
+    time_limit: 8
+
+  # --- firewalld ---
+
+  - type: recall
+    prompt: "Show whether firewalld is running."
+    answers:
+      - "firewall-cmd --state"
+    time_limit: 9
+
+  - type: recall
+    prompt: "List the full configuration of the active firewall zone."
+    answers:
+      - "firewall-cmd --list-all"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Open TCP port 8080 permanently."
+    answers:
+      - "firewall-cmd --permanent --add-port=8080/tcp"
+      - "firewall-cmd --add-port=8080/tcp --permanent"
+    time_limit: 12
+
+  - type: recall
+    prompt: "Reload firewalld so permanent rules take effect."
+    answers:
+      - "firewall-cmd --reload"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Add the http service to the firewall."
+    answers:
+      - "firewall-cmd --add-service=http"
+    time_limit: 10
+
+  # --- output-reading recalls ---
+
+  - type: recall
+    prompt: |
+      A status check prints:
+        realmd.service - Realm Citadel Daemon
+           Loaded: loaded (/usr/lib/systemd/system/realmd.service; enabled)
+           Active: failed (Result: exit-code) since Mon 14:22:01 UTC; 3s ago
+          Process: 2317 ExecStart=/usr/sbin/realmd (code=exited, status=1/FAILURE)
+      What state is the service in? One word.
+    answers:
+      - "failed"
+    time_limit: 14
+
+  - type: recall
+    prompt: |
+      A log line reads:
+        type=AVC msg=audit(...): avc: denied { name_connect } for pid=2317
+        comm="realmd" dest=8080 scontext=system_u:system_r:realmd_t:s0
+        tcontext=system_u:object_r:http_port_t:s0 tclass=tcp_socket permissive=0
+      Which subsystem is blocking this action? One word.
+    answers:
+      - "selinux"
+    time_limit: 14
+
+  - type: recall
+    prompt: |
+      You run getenforce and it prints:
+        Enforcing
+      Give the command to switch SELinux to permissive for now, without a reboot.
+    answers:
+      - "setenforce 0"
+      - "setenforce permissive"
+    time_limit: 13
+
+  # --- boss: diagnostic-chain solve ---
+
+  - type: solve
+    name: The Failing Daemon
+    objective: >-
+      The service realmd is installed, its config is valid, and its file
+      permissions and ownership are correct, yet "systemctl start realmd" fails.
+      Do not guess. Run the triage chain in order: read systemctl status realmd,
+      then journalctl -u realmd, then look for an SELinux AVC denial (captures are
+      at world/var/log/systemctl_status.txt and world/var/log/avc_denial.txt),
+      then test the SELinux hypothesis by switching to permissive with
+      setenforce 0 and starting it again.
+    hint: "systemctl status realmd ; journalctl -u realmd ; ausearch -m avc ; setenforce 0 ; systemctl start realmd"
+    key: "rhel triage chain"
