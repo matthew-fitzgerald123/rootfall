@@ -22,6 +22,14 @@ from . import srs
 from . import world
 
 
+def _zone_number(zone_id):
+    """Return the 1-based zone number from an id like 'zone07_frontier'."""
+    try:
+        return int(zone_id.split("_")[0].replace("zone", ""))
+    except (ValueError, IndexError):
+        return 0
+
+
 class Engine:
     def __init__(self, save_dir="saves", world_root="world", campaign_dir="campaign"):
         self.save_dir = save_dir
@@ -46,7 +54,22 @@ class Engine:
 
         self._intro()
 
-        for index, zone in enumerate(self.zones):
+        start_index = self._find_start_zone()
+        if start_index > 0:
+            zone_name = self.zones[start_index].name
+            try:
+                answer = input(
+                    "\n  You have cleared {} zone(s). Jump to {}? [Y/n] ".format(
+                        start_index, zone_name
+                    )
+                ).strip().lower()
+            except EOFError:
+                answer = "y"
+            if not (not answer or answer.startswith("y")):
+                start_index = 0
+
+        for index in range(start_index, len(self.zones)):
+            zone = self.zones[index]
             run["zone_index"] = index
             run["position"] = zone.path
             compressed = zone.id in self.meta["cleared_zones"]
@@ -67,6 +90,14 @@ class Engine:
 
         self._victory(run)
         save.clear_run(self.save_dir)
+        return 0
+
+    def _find_start_zone(self):
+        """Return the index of the first uncleared zone (0 if all cleared)."""
+        cleared = set(self.meta["cleared_zones"])
+        for i, zone in enumerate(self.zones):
+            if zone.id not in cleared:
+                return i
         return 0
 
     # -- zone play ----------------------------------------------------------
@@ -119,6 +150,7 @@ class Engine:
                 zone_id=zone.id,
                 hp=hp,
                 max_hp=max_hp,
+                gated=(_zone_number(zone.id) >= 7),
             )
 
         raise campaign.CampaignError("unknown encounter type: {!r}".format(kind))

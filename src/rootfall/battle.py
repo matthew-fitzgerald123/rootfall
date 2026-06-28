@@ -228,8 +228,13 @@ def recall_battle(scheduler, encounter, miss_damage=3,
 # --- SOLVE -----------------------------------------------------------------
 
 def solve_battle(scheduler, encounter, world_root="world", miss_damage=5,
-                 screen=None, zone_id=None, hp=0, max_hp=20):
-    """Honor-system battle solved in the player's own terminal."""
+                 screen=None, zone_id=None, hp=0, max_hp=20, gated=True):
+    """Honor-system battle solved in the player's own terminal.
+
+    When gated=False (zones 1-6) the player is trusted unconditionally and no
+    confirmation prompt is shown. When gated=True (zone 7+) they must
+    self-report whether the command worked.
+    """
     key = encounter.get("key") or "find -name"
     objective = encounter["objective"]
 
@@ -247,7 +252,10 @@ def solve_battle(scheduler, encounter, world_root="world", miss_damage=5,
         print("  Open another terminal, solve it for real, then come back.")
         _prompt("  Press Enter when you have run it... ")
 
-    reported = _yes_no("  Did the command work?")
+    if gated:
+        reported = _yes_no("  Did the command work?")
+    else:
+        reported = True
 
     scheduler.ensure(key, objective, encounter.get("hint", ""))
     scheduler.record(key, reported, 0.0, 0)
