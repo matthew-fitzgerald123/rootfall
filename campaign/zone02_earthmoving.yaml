@@ -1,0 +1,93 @@
+# Zone 2: Earthmoving.
+#
+# The player learns to shape the tree: make, copy, move, link, and destroy.
+# Runes are slotted onto the base commands. The boss is a build: the setup is the
+# lesson, so the player constructs a nested cell block and symlinks a prisoner.
+#
+# GNU/Linux flag forms throughout.
+
+id: zone02_earthmoving
+name: Earthmoving
+path: /var
+theme: Shaping the tree. mkdir, touch, cp, mv, rm, ln.
+commands:
+  - mkdir
+  - touch
+  - cp
+  - mv
+  - rm
+  - ln
+
+encounters:
+  - type: villager
+    name: The Groundbreaker
+    lore: >-
+      A mason caked in soil leans on a spade. "Anyone can dig one hole," he says.
+      "The runes let you carve a whole warren at once, haul rooms about, and bind
+      one place to another." He teaches you to move earth without breaking your
+      back.
+    teaches:
+      - command: "mkdir -p"
+        desc: "create a directory and any missing parents in one stroke"
+      - command: "cp -r"
+        desc: "copy a directory and everything inside it, recursively"
+      - command: "rm -rf"
+        desc: "remove a tree forcibly, no prompts (aim carefully)"
+      - command: "mv"
+        desc: "move or rename in a single step"
+      - command: "ln -s"
+        desc: "make a symbolic link, a signpost to another path"
+      - command: "touch"
+        desc: "create an empty file or update its timestamp"
+    quiz:
+      prompt: "Which flag makes mkdir build missing parent directories as needed?"
+      answers:
+        - "mkdir -p"
+        - "-p"
+
+  - type: recall
+    prompt: "Create the nested path a/b/c in a single command."
+    answers:
+      - "mkdir -p a/b/c"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Create an empty file named notes.txt."
+    answers:
+      - "touch notes.txt"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Copy the directory src and all its contents to dst."
+    answers:
+      - "cp -r src dst"
+      - "cp -R src dst"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Rename old.txt to new.txt."
+    answers:
+      - "mv old.txt new.txt"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Forcibly remove the directory tree build and everything under it."
+    answers:
+      - "rm -rf build"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Make a symbolic link named link pointing at target."
+    answers:
+      - "ln -s target link"
+    time_limit: 8
+
+  - type: solve
+    name: The Cell Block
+    objective: >-
+      Build a holding cell. With a single mkdir -p create
+      world/var/cells/block-a/cell-3, place an empty prisoner.txt inside it with
+      touch, then bind it to the surface with a symbolic link at
+      world/var/escape.txt using ln -s.
+    hint: "mkdir -p world/var/cells/block-a/cell-3 ; touch world/var/cells/block-a/cell-3/prisoner.txt ; ln -s cells/block-a/cell-3/prisoner.txt world/var/escape.txt"
+    key: "mkdir -p"

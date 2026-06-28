@@ -1,0 +1,122 @@
+# Zone 3: Sight.
+#
+# The Hall of Records under /var/log. The player learns to read: page files,
+# peek at heads and tails, follow a live log, and hunt with grep. The boss pulls
+# ERROR lines from a seeded log and counts them with wc -l.
+#
+# grep -r, grep -v, and tail -f are documented weak spots. The villager sharpens
+# them. GNU/Linux flag forms throughout.
+
+id: zone03_sight
+name: Sight
+path: /var/log
+theme: Reading the records. cat, less, head, tail, grep, wc.
+commands:
+  - cat
+  - less
+  - head
+  - tail
+  - grep
+  - wc
+
+encounters:
+  - type: villager
+    name: The Recordkeeper
+    lore: >-
+      A pale archivist surrounded by endless shelves. "Most people drown in the
+      records," she says. "The trained eye filters." She drills the three runes
+      that trip up almost everyone: searching whole trees, inverting a match, and
+      watching a log as it is written.
+    teaches:
+      - command: "grep -r"
+        desc: "search recursively through every file in a tree"
+      - command: "grep -v"
+        desc: "invert: show the lines that do NOT match"
+      - command: "grep -i"
+        desc: "case-insensitive match"
+      - command: "grep -n"
+        desc: "prefix each match with its line number"
+      - command: "tail -f"
+        desc: "follow a file, printing new lines as they arrive"
+      - command: "tail -n"
+        desc: "show the last N lines"
+      - command: "head -n"
+        desc: "show the first N lines"
+      - command: "wc -l"
+        desc: "count lines"
+    quiz:
+      prompt: "Which grep flag inverts the match, printing only lines that do NOT match?"
+      answers:
+        - "grep -v"
+        - "-v"
+
+  - type: recall
+    prompt: "Print the whole file realm.log to the screen."
+    answers:
+      - "cat realm.log"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Open realm.log in a pager you can scroll."
+    answers:
+      - "less realm.log"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Show the first 20 lines of realm.log."
+    answers:
+      - "head -n 20 realm.log"
+      - "head -20 realm.log"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Show the last 20 lines of realm.log."
+    answers:
+      - "tail -n 20 realm.log"
+      - "tail -20 realm.log"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Follow realm.log live as new lines are written."
+    answers:
+      - "tail -f realm.log"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Search realm.log for ERROR, ignoring case."
+    answers:
+      - "grep -i error realm.log"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Search the whole tree recursively for the word warden."
+    answers:
+      - "grep -r warden ."
+      - "grep -r warden"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Show every line of realm.log that does NOT contain INFO."
+    answers:
+      - "grep -v INFO realm.log"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Search realm.log for ERROR and show line numbers."
+    answers:
+      - "grep -n ERROR realm.log"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Count the number of lines in realm.log."
+    answers:
+      - "wc -l realm.log"
+    time_limit: 7
+
+  - type: solve
+    name: The Error Tally
+    objective: >-
+      world/var/log/realm.log is a tangle of INFO, WARN, and ERROR records. Pull
+      out only the ERROR lines and count them with wc -l.
+    hint: "grep ERROR world/var/log/realm.log | wc -l"
+    key: "grep wc -l"

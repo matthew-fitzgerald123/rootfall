@@ -1,0 +1,90 @@
+# Zone 4: The Permission Gates.
+#
+# The player learns to read and set permissions: numeric and symbolic chmod,
+# ownership, and the umask. The boss ships a gate file at the wrong mode and the
+# player must chmod it open to the correct numeric mode.
+#
+# GNU/Linux flag forms throughout.
+
+id: zone04_permission_gates
+name: The Permission Gates
+path: /etc
+theme: Reading and setting permissions. chmod, chown, sudo, umask.
+commands:
+  - chmod
+  - chown
+  - sudo
+  - umask
+
+encounters:
+  - type: villager
+    name: The Gatewright
+    lore: >-
+      An iron-gloved keeper guards a row of sealed doors. "A permission is three
+      triplets: owner, group, others, each a sum of read 4, write 2, execute 1,"
+      he says. "So 755 is rwx for the owner and r-x for the rest." He teaches you
+      to set modes by number and by symbol.
+    teaches:
+      - command: "chmod 755"
+        desc: "rwx for owner, r-x for group and others (common for executables)"
+      - command: "chmod 644"
+        desc: "rw- for owner, r-- for group and others (common for files)"
+      - command: "chmod 600"
+        desc: "rw- for owner only, locked to everyone else"
+      - command: "chmod +x"
+        desc: "add the execute bit symbolically"
+      - command: "chmod -R"
+        desc: "apply the change recursively through a tree"
+      - command: "chown user:group"
+        desc: "set both owner and group at once"
+      - command: "umask"
+        desc: "the mask that decides default permissions on new files"
+    quiz:
+      prompt: "Which numeric mode gives the owner read, write, and execute, and everyone else read and execute?"
+      answers:
+        - "chmod 755"
+        - "755"
+
+  - type: recall
+    prompt: "Set notes.txt to mode 644 numerically."
+    answers:
+      - "chmod 644 notes.txt"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Lock secret.txt down to mode 600."
+    answers:
+      - "chmod 600 secret.txt"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Add the execute bit to script.sh symbolically."
+    answers:
+      - "chmod +x script.sh"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Set mode 755 recursively across the directory bin."
+    answers:
+      - "chmod -R 755 bin"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Give file.txt to owner deploy and group staff in one command."
+    answers:
+      - "chown deploy:staff file.txt"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Show the current umask value."
+    answers:
+      - "umask"
+    time_limit: 6
+
+  - type: solve
+    name: The Sealed Gate
+    objective: >-
+      world/etc/gate.lock is sealed at mode 600, readable only by its owner. Open
+      it to mode 644 with a single numeric chmod so the realm can read it.
+    hint: "chmod 644 world/etc/gate.lock"
+    key: "chmod numeric"

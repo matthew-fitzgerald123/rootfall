@@ -146,9 +146,12 @@ class Engine:
         print("  HP [{}] {}/{}".format(bar, hp, run["max_hp"]))
 
     def _victory(self, run):
+        deepest = self.zones[-1].name if self.zones else "the deep system"
         print("\n" + "=" * 60)
-        print("  You reached the bottom with {} HP to spare.".format(max(0, run["hp"])))
-        print("  Deeper zones await in later releases.")
+        print("  You cleared all {} zones and reached {}.".format(len(self.zones), deepest))
+        print("  You stand at the bottom with {} HP to spare.".format(max(0, run["hp"])))
+        print("  The descent is mapped. Run again: mastered commands stay buried,")
+        print("  and only what you are still slow on will rise to meet you.")
         print("=" * 60)
 
 

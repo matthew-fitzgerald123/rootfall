@@ -1,0 +1,102 @@
+# Zone 6: The Living Realm.
+#
+# /proc, where processes live. The player learns to list, watch, and end them,
+# and to read a process status file. The boss is a hybrid: a recall force-kill
+# under the timer, then a solve confirming the rogue from its fake status file.
+#
+# GNU/Linux flag forms throughout. The fake /proc entries are fabricated by
+# world.py since macOS has no /proc.
+
+id: zone06_living_realm
+name: The Living Realm
+path: /proc
+theme: Listing and ending processes. ps, top, kill, jobs, nice.
+commands:
+  - ps
+  - top
+  - kill
+  - jobs
+  - nice
+
+encounters:
+  - type: villager
+    name: The Reaper
+    lore: >-
+      A hooded figure tends a field of running souls. "Two ways to ask them to
+      leave," it says. "kill -15 is SIGTERM, a polite request a process can clean
+      up after. kill -9 is SIGKILL, which cannot be caught or ignored." It also
+      shows you the two process listings, ps aux and ps -ef, and how to read a
+      soul's record at /proc/<pid>/status.
+    teaches:
+      - command: "ps aux"
+        desc: "BSD-style listing of every process with CPU and memory"
+      - command: "ps -ef"
+        desc: "full standard listing with parent PIDs"
+      - command: "kill -15"
+        desc: "send SIGTERM, the polite, catchable stop"
+      - command: "kill -9"
+        desc: "send SIGKILL, the uncatchable force-kill"
+      - command: "top"
+        desc: "live, sorted view of running processes"
+      - command: "jobs"
+        desc: "list the shell's background jobs"
+      - command: "nice"
+        desc: "start a process with an adjusted scheduling priority (renice changes a running one)"
+    quiz:
+      prompt: "Which signal does kill -9 send, the one that cannot be caught or ignored?"
+      answers:
+        - "SIGKILL"
+        - "kill -9"
+        - "9"
+
+  - type: recall
+    prompt: "List every process, BSD style, with CPU and memory."
+    answers:
+      - "ps aux"
+    time_limit: 6
+
+  - type: recall
+    prompt: "List every process in the full standard format with parent PIDs."
+    answers:
+      - "ps -ef"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Politely ask process 4242 to stop with SIGTERM."
+    answers:
+      - "kill -15 4242"
+      - "kill 4242"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Open the live, sorted process viewer."
+    answers:
+      - "top"
+    time_limit: 5
+
+  - type: recall
+    prompt: "List the current shell's background jobs."
+    answers:
+      - "jobs"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Lower the priority of running process 4242 to nice value 10."
+    answers:
+      - "renice 10 4242"
+      - "renice -n 10 4242"
+    time_limit: 9
+
+  - type: recall
+    prompt: "The rogue wraithd holds PID 6606. Send it the uncatchable kill now."
+    answers:
+      - "kill -9 6606"
+    time_limit: 6
+
+  - type: solve
+    name: The Rogue Process
+    objective: >-
+      A rogue process haunts the realm. Read world/proc/6606/status to confirm it
+      is wraithd and still running, then end it for good with a force-kill by PID.
+    hint: "cat world/proc/6606/status ; kill -9 6606"
+    key: "kill -9"

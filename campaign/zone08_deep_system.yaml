@@ -1,0 +1,132 @@
+# Zone 8: Deep System.
+#
+# The bottom of the descent. The player learns to measure space, inspect block
+# devices and memory, and archive and sync trees. The boss is a combo battle:
+# seal the realm archive with tar and verify its contents, or weigh the
+# subdirectories with du piped into a human-readable sort.
+#
+# GNU/Linux flag forms throughout. The tar trio czf, xzf, tzf is the classic
+# point of confusion, so the villager drills it.
+
+id: zone08_deep_system
+name: Deep System
+path: /
+theme: Space, devices, and archives. df, du, free, lsblk, mount, tar, rsync.
+commands:
+  - df
+  - du
+  - mount
+  - free
+  - lsblk
+  - tar
+  - rsync
+
+encounters:
+  - type: villager
+    name: The Deep Keeper
+    lore: >-
+      An old engineer at the foundation of the world. "Three tar flags, one
+      letter apart, and everyone confuses them," she says. "czf creates a gzip
+      archive, xzf extracts one, tzf lists what is inside without unpacking. And
+      mind the difference between df -h, which shows free space on mounted
+      filesystems, and du -sh, which sums the size of a directory." She teaches
+      you to weigh and seal the realm.
+    teaches:
+      - command: "df -h"
+        desc: "free space per mounted filesystem, human-readable"
+      - command: "du -sh"
+        desc: "summed, human-readable size of a directory"
+      - command: "du -h"
+        desc: "human-readable size of each item"
+      - command: "free -h"
+        desc: "memory usage, human-readable"
+      - command: "lsblk"
+        desc: "list block devices as a tree"
+      - command: "mount"
+        desc: "show or attach mounted filesystems"
+      - command: "tar -czf"
+        desc: "create a gzip-compressed archive (create, gzip, file)"
+      - command: "tar -xzf"
+        desc: "extract a gzip-compressed archive"
+      - command: "tar -tzf"
+        desc: "list the contents of a gzip archive without extracting"
+      - command: "rsync -av"
+        desc: "sync trees, archive mode, verbose"
+      - command: "rsync -avz"
+        desc: "sync trees, archive mode, verbose, compressed in transit"
+    quiz:
+      prompt: "Which tar flags create a gzip-compressed archive file (create, gzip, file)?"
+      answers:
+        - "tar -czf"
+        - "czf"
+        - "-czf"
+
+  - type: recall
+    prompt: "Show free space on all mounted filesystems, human-readable."
+    answers:
+      - "df -h"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Show the total human-readable size of the directory realm."
+    answers:
+      - "du -sh realm"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Show memory usage in human-readable units."
+    answers:
+      - "free -h"
+    time_limit: 6
+
+  - type: recall
+    prompt: "List the block devices as a tree."
+    answers:
+      - "lsblk"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Show the currently mounted filesystems."
+    answers:
+      - "mount"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Create a gzip archive realm.tar.gz from the directory realm."
+    answers:
+      - "tar -czf realm.tar.gz realm"
+    time_limit: 9
+
+  - type: recall
+    prompt: "Extract the gzip archive realm.tar.gz."
+    answers:
+      - "tar -xzf realm.tar.gz"
+    time_limit: 8
+
+  - type: recall
+    prompt: "List the contents of realm.tar.gz without extracting it."
+    answers:
+      - "tar -tzf realm.tar.gz"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Sync directory src to dst in archive mode, verbose."
+    answers:
+      - "rsync -av src dst"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Sync src to dst in archive mode, verbose, compressed in transit."
+    answers:
+      - "rsync -avz src dst"
+    time_limit: 8
+
+  - type: solve
+    name: Sealing the Realm
+    objective: >-
+      Seal the realm. Create a gzip archive of world/srv/realm with tar -czf, then
+      verify its contents with tar -tzf. As an alternative read, weigh each
+      subdirectory with du -sh world/srv/realm/* piped into sort -h to find the
+      largest.
+    hint: "tar -czf realm.tar.gz world/srv/realm ; tar -tzf realm.tar.gz   (or: du -sh world/srv/realm/* | sort -h)"
+    key: "tar czf tzf"

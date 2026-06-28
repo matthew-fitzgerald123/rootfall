@@ -1,0 +1,110 @@
+# Zone 5: The Stream Weavers.
+#
+# Pipes unlock here. The player learns to transform text in flight: substitute,
+# extract fields, cut columns, sort, count uniques, and translate characters.
+# The boss is the first combo battle: a three-stage pipe over a colon-delimited
+# file.
+#
+# GNU/Linux flag forms throughout. Note the GNU sed -i form, which differs from
+# macOS BSD sed.
+
+id: zone05_stream_weavers
+name: The Stream Weavers
+path: /usr/bin
+theme: Transforming streams. Pipes unlock. sed, awk, cut, sort, uniq, tr.
+commands:
+  - sed
+  - awk
+  - cut
+  - sort
+  - uniq
+  - tr
+
+encounters:
+  - type: villager
+    name: The Loom Mistress
+    lore: >-
+      She works a loom strung with running text instead of thread. "From here on
+      you may chain runes with a pipe, the output of one feeding the next," she
+      says. "The classic weave is sort piped into uniq -c: line them up, then
+      tally the duplicates." She also warns you: GNU sed edits in place with
+      sed -i 's/.../...' file, while macOS BSD sed demands an empty argument after
+      -i. Target Linux.
+    teaches:
+      - command: "sed 's/old/new/'"
+        desc: "substitute the first old with new on each line"
+      - command: "awk '{print $2}'"
+        desc: "print a chosen whitespace-separated field"
+      - command: "cut -d: -f1"
+        desc: "cut a field from delimited text, here delimiter colon, field 1"
+      - command: "sort"
+        desc: "sort lines"
+      - command: "sort -n"
+        desc: "sort numerically rather than lexically"
+      - command: "uniq -c"
+        desc: "collapse adjacent duplicates and prefix each with its count"
+      - command: "tr a-z A-Z"
+        desc: "translate one character set to another, here lower to upper"
+    quiz:
+      prompt: "After sorting lines, which command with which flag tallies how many times each one appears?"
+      answers:
+        - "uniq -c"
+        - "sort | uniq -c"
+
+  - type: recall
+    prompt: "Substitute the first occurrence of old with new on each line using sed."
+    answers:
+      - "sed 's/old/new/'"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Print the second whitespace field of each line with awk."
+    answers:
+      - "awk '{print $2}'"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Cut the first colon-delimited field from the stream."
+    answers:
+      - "cut -d: -f1"
+      - "cut -d ':' -f1"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Sort lines in plain order."
+    answers:
+      - "sort"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Sort lines numerically."
+    answers:
+      - "sort -n"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Collapse adjacent duplicate lines and count each."
+    answers:
+      - "uniq -c"
+    time_limit: 7
+
+  - type: recall
+    prompt: "Translate lowercase letters to uppercase with tr."
+    answers:
+      - "tr a-z A-Z"
+      - "tr '[:lower:]' '[:upper:]'"
+    time_limit: 8
+
+  - type: recall
+    prompt: "Edit file.txt in place with GNU sed, replacing old with new."
+    answers:
+      - "sed -i 's/old/new/' file.txt"
+    time_limit: 9
+
+  - type: solve
+    name: The Tally Weave
+    objective: >-
+      world/etc/roster.db is colon-delimited as name:role:zone. In a single pipe,
+      cut out the role field, sort it, and count how many of each role there are.
+    hint: "cut -d: -f2 world/etc/roster.db | sort | uniq -c"
+    key: "cut sort uniq"

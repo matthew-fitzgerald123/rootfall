@@ -1,0 +1,151 @@
+# Zone 7: The Frontier.
+#
+# The boss zone. Networking is where interviews are won or lost, so this zone has
+# the most recalls and the tightest timers. The villager quiz is the hardest in
+# the game: the ss-versus-netstat distinction. The boss is a combo battle that
+# identifies what is listening on port 8080, with a tcpdump recall in the same
+# fight.
+#
+# GNU/Linux flag forms throughout. Real network state is not in the fake world,
+# so world.py seeds a captured ss output for the boss to reference.
+
+id: zone07_frontier
+name: The Frontier
+path: /proc/net
+theme: Inspecting the network. ss, netstat, tcpdump, curl, dig, lsof.
+commands:
+  - ss
+  - netstat
+  - tcpdump
+  - curl
+  - dig
+  - lsof
+
+encounters:
+  - type: villager
+    name: The Borderwarden
+    lore: >-
+      A scarred scout watches the wire. "netstat is the old way and it is
+      deprecated," she says. "ss is the modern replacement, and the muscle memory
+      is the same: -tulpn lists tcp and udp listening sockets, numeric, with the
+      owning process. To watch raw packets, tcpdump -i picks an interface. To ask
+      which process owns a port, lsof -i :PORT." She drills you hard, because the
+      Frontier does not forgive hesitation.
+    teaches:
+      - command: "ss -tulpn"
+        desc: "tcp and udp listening sockets, numeric, with process (modern)"
+      - command: "ss -tlnp"
+        desc: "tcp listening sockets, numeric, with process"
+      - command: "netstat -tulpn"
+        desc: "the deprecated equivalent of ss -tulpn"
+      - command: "netstat -tlnp"
+        desc: "deprecated tcp listening sockets, numeric, with process"
+      - command: "tcpdump -i"
+        desc: "capture packets on a named interface"
+      - command: "tcpdump -nn"
+        desc: "do not resolve hosts or ports, show raw numbers"
+      - command: "curl -I"
+        desc: "fetch response headers only"
+      - command: "curl -s"
+        desc: "silent: no progress meter or errors"
+      - command: "dig +short"
+        desc: "terse DNS answer, just the records"
+      - command: "dig A"
+        desc: "query the A (address) record"
+      - command: "lsof -i"
+        desc: "list open network files (sockets)"
+      - command: "lsof -i :PORT"
+        desc: "show what process holds a specific port"
+    quiz:
+      prompt: "ss is the modern replacement for which deprecated tool, where both list listening sockets with -tulpn?"
+      answers:
+        - "netstat"
+
+  - type: recall
+    prompt: "List all tcp and udp listening sockets, numeric, with process (modern tool)."
+    answers:
+      - "ss -tulpn"
+    time_limit: 5
+
+  - type: recall
+    prompt: "List tcp listening sockets only, numeric, with process (modern tool)."
+    answers:
+      - "ss -tlnp"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Same as ss -tulpn but with the deprecated tool."
+    answers:
+      - "netstat -tulpn"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Deprecated tool: tcp listening sockets, numeric, with process."
+    answers:
+      - "netstat -tlnp"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Capture packets on interface eth0."
+    answers:
+      - "tcpdump -i eth0"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Capture without resolving names or ports."
+    answers:
+      - "tcpdump -nn"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Fetch only the response headers from a URL."
+    answers:
+      - "curl -I"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Fetch a URL silently, no progress meter."
+    answers:
+      - "curl -s"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Get the terse DNS answer for example.com."
+    answers:
+      - "dig +short example.com"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Query the A record for example.com."
+    answers:
+      - "dig A example.com"
+      - "dig example.com A"
+    time_limit: 6
+
+  - type: recall
+    prompt: "List all open network sockets with lsof."
+    answers:
+      - "lsof -i"
+    time_limit: 5
+
+  - type: recall
+    prompt: "Show which process holds port 8080 with lsof."
+    answers:
+      - "lsof -i :8080"
+    time_limit: 6
+
+  - type: recall
+    prompt: "Capture traffic on interface eth0 without name resolution, in one tcpdump."
+    answers:
+      - "tcpdump -nn -i eth0"
+      - "tcpdump -i eth0 -nn"
+    time_limit: 6
+
+  - type: solve
+    name: The Listener on 8080
+    objective: >-
+      Something is LISTENING on port 8080. The captured socket table is at
+      world/var/net/ss.txt. Identify the process holding 8080 by filtering the
+      listening sockets for that port.
+    hint: "ss -tulpn | grep 8080   (live: lsof -i :8080)"
+    key: "ss grep port"
